@@ -1,0 +1,178 @@
+
+[General]
+# 使用IPv4
+ip-mode = dual
+
+# 资源解析器 URL
+resource-parser = https://raw.githubusercontent.com/Peng-YM/Sub-Store/master/scripts/sub-store-parser.js
+
+# 禁用IPv6
+ipv6 = false
+
+# DNS服务器配置：启用加密DNS（DNS over HTTPS）和本地DNS
+dns-server = system,119.29.29.29,114.114.114.114,223.5.5.5,1.1.1.1,8.8.8.8
+
+# DNS over HTTPS 设置 (DoH 服务器)
+# 国际DoH服务器（如Google和Cloudflare）
+#doh-server = https://dns.cloudflare.com/dns-query,https://dns.google/dns-query
+
+# 国内DoH服务器（阿里云，腾讯云，114）
+#doh-server = https://dns.alidns.com/dns-query,https://doh.pub/dns-query,https://doh.114dns.com/dns-query
+
+# 跳过代理的IP段和域名
+skip-proxy = 192.168.0.0/16,10.0.0.0/8,172.16.0.0/12,localhost,*.local,e.crashlytics.com
+
+# 跳过隧道的IP段（内网和保留地址）
+bypass-tun = 10.0.0.0/8,100.64.0.0/10,127.0.0.0/8,169.254.0.0/16,172.16.0.0/12,192.0.0.0/24,192.0.2.0/24,192.88.99.0/24,192.168.0.0/16,198.51.100.0/24,203.0.113.0/24,224.0.0.0/4,255.255.255.255/32
+
+# 禁用Wi-Fi访问（确保配置安全）
+allow-wifi-access = false
+wifi-access-http-port = 7222
+wifi-access-socks5-port = 7221
+
+# 测试代理连接和互联网连接的URL
+proxy-test-url = http://www.gstatic.com/generate_204
+proxy-test-url = http://connectivitycheck.gstatic.com/generate_204
+internet-test-url = http://connectivitycheck.gstatic.com/generate_204
+#internet-test-url = http://detectportal.firefox.com/success.txt
+test-timeout = 3
+
+# 自动选择接口模式
+interface-mode = auto
+
+
+# 地理位置数据库和 ASN 数据库
+geoip-url = https://raw.githubusercontent.com/Masaiki/GeoIP2-CN/release/Country.mmdb
+#ipasn-url = https://raw.githubusercontent.com/P3TERX/GeoLite.mmdb/download/GeoLite2-ASN.mmdb
+
+
+[Host]
+# 针对腾讯相关域名的DNS解析，使用国内DNS加速
+wechat.com = 119.29.29.29
+qq.com = 119.29.29.29
+qlogo.cn = 119.29.29.29
+myqcloud.com = 119.29.29.29
+tenpay.com = 119.29.29.29
+tencent.com = 119.29.29.29
+gtimg.com = 119.29.29.29
+
+[Rule]
+# 针对腾讯和微信相关域名的直连设置，确保流量不通过代理，提升国内访问速度
+DOMAIN-SUFFIX,qq.com,DIRECT
+DOMAIN-SUFFIX,wechat.com,DIRECT
+DOMAIN-SUFFIX,qlogo.cn,DIRECT
+DOMAIN-SUFFIX,myqcloud.com,DIRECT
+DOMAIN-SUFFIX,tenpay.com,DIRECT
+DOMAIN-SUFFIX,tencent.com,DIRECT
+DOMAIN-SUFFIX,gtimg.com,DIRECT
+
+# 针对不同 ISP 的优化规则
+#IP-ASN,AS4134,DIRECT  # 中国电信
+#IP-ASN,AS4837,DIRECT  # 中国联通
+#IP-ASN,AS9808,DIRECT  # 中国移动
+# 默认流量处理策略
+#IP-ASN,DEFAULT,Available    # 其他未指定的 ASN 走代理
+
+# GEOIP规则：针对中国IP地址的流量直连，其他走代理
+GEOIP,CN,DIRECT
+# 最终规则，未匹配规则走Failover代理
+FINAL,Failover
+
+[Proxy]
+
+[Remote Proxy]
+
+
+[Proxy Chain]
+
+[Proxy Group]
+
+# Available 线路配置（主线路组）
+Main_Available = fallback,Available,url = http://cp.cloudflare.com/generate_204,interval = 600,max-timeout = 3000,img-url = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Available.png
+
+# Failover 线路配置（备用线路组）
+Failover = fallback,ALL_Filter,url = http://cp.cloudflare.com/generate_204,interval = 150,max-timeout = 2000,img-url = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Failover.png
+
+# 视频、社交、地区性代理组
+ChatGPT = fallback,US_Filter,url = http://www.gstatic.com/generate_204,interval = 200,max-timeout = 300,img-url = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/ChatGPT.png
+
+TikTok = select,Set,url = http://www.gstatic.com/generate_204,img-url = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/TikTok.png
+
+YouTube = select,Main_Available,url = http://cp.cloudflare.com/generate_204,img-url = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/YouTube.png
+Telegram = select,Main_Available,url = http://cp.cloudflare.com/generate_204,img-url = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Telegram.png
+
+
+[Remote Filter]
+Set = NodeSelect
+Available = NodeSelect,奈云, FilterKey = "^(?!.*x3).*$"
+ALL_Filter = NodeSelect, FilterKey = ".*"
+
+HK_Filter = NameRegex, FilterKey = "(?i)(港|HK|Hong)"
+TW_Filter = NameRegex, FilterKey = "(?i)(台|TW|Tai)"
+JP_Filter = NameRegex, FilterKey = "(?i)(日本|川日|东京|大阪|泉日|埼玉|沪日|深日|JP|Japan)"
+US_Filter = NameRegex, FilterKey = "(?i)(美|波特兰|达拉斯|俄勒冈|凤凰城|费利蒙|硅谷|拉斯维加斯|洛杉矶|圣何塞|圣克拉拉|西雅图|芝加哥|US|United States)"
+
+
+
+[Remote Rule]
+https://github.com/fmz200/wool_scripts/raw/main/Loon/rule/rejectAd.list, policy=REJECT, tag=rejectAd.list, enabled=true
+https://raw.githubusercontent.com/Loon0x00/LoonLiteRules/main/proxy/YouTube.list, policy=Main_Available, tag=YouTube, enabled=true
+https://raw.githubusercontent.com/Loon0x00/LoonLiteRules/main/proxy/Telegram.list, policy=Main_Available, tag=Telegram, enabled=true
+https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Proxy/Proxy.list, policy=Main_Available, tag=Global, enabled=true
+https://raw.githubusercontent.com/Loon0x00/LoonLiteRules/main/direct/cn.list, policy=DIRECT, tag=GEOIP_CN, enabled=true
+
+[Rewrite]
+
+[Script]
+# 自动插件更新路径配置
+# 定时任务，运行脚本查看节点信息
+cron "0 9 * * *" script-path=https://raw.githubusercontent.com/Yu9191/Rewrite/refs/heads/main/xbfn.js, tag=神秘vpn, img-url=https://raw.githubusercontent.com/Yu9191/-/main/dingdangmao.jpg
+
+[Plugin]
+http://script.hub/file/_start_/https://raw.githubusercontent.com/WeiGiegie/666/main/ximalayajisuban.js/_end_/ximalayajisuban.plugin?type=qx-rewrite&target=loon-plugin&del=true, tag=喜马拉雅极速版, enabled=true
+http://script.hub/file/_start_/https://raw.githubusercontent.com/Yu9191/Rewrite/refs/heads/main/sgvpn.js/_end_/sgvpn.plugin?type=qx-rewrite&target=loon-plugin&del=true, enabled=true
+https://raw.githubusercontent.com/luestr/ProxyResource/main/Tool/Loon/Plugin/Script-Hub.plugin, policy=Main_Available, enabled=true
+https://gitlab.com/lodepuly/vpn_tool/-/raw/master/Tool/Loon/Plugin/Sub-Store.plugin, policy=Main_Available, enabled=true
+http://script.hub/file/_start_/https://raw.githubusercontent.com/WeiGiegie/666/main/byhz.js/_end_/byhz.plugin?type=qx-rewrite&target=loon-plugin&del=true, enabled=true
+https://gitlab.com/lodepuly/vpn_tool/-/raw/master/Tool/Loon/Plugin/WexinMiniPrograms_Remove_ads.plugin, enabled=true
+https://gitlab.com/lodepuly/vpn_tool/-/raw/master/Tool/Loon/Plugin/RedPaper_remove_ads.plugin, enabled=true
+https://gitlab.com/lodepuly/vpn_tool/-/raw/master/Tool/Loon/Plugin/Zhihu_remove_ads.plugin, enabled=true
+https://gitlab.com/lodepuly/vpn_tool/-/raw/master/Tool/Loon/Plugin/Tieba_remove_ads.plugin, enabled=true
+https://gitlab.com/lodepuly/vpn_tool/-/raw/master/Tool/Loon/Plugin/Weibo_remove_ads.plugin, enabled=true
+https://gitlab.com/lodepuly/vpn_tool/-/raw/master/Tool/Loon/Plugin/Weixin_external_links_unlock.plugin, enabled=true
+https://gitlab.com/lodepuly/vpn_tool/-/raw/master/Tool/Loon/Plugin/Switch_github_mirror.plugin, enabled=true
+https://gitlab.com/lodepuly/vpn_tool/-/raw/master/Tool/Loon/Plugin/BoxJs.plugin, policy=Main_Available, enabled=true
+https://gitlab.com/lodepuly/vpn_tool/-/raw/master/Tool/Loon/Plugin/1.1.1.1.plugin, enabled=true
+https://gitlab.com/lodepuly/vpn_tool/-/raw/master/Tool/Loon/Plugin/LoonGallery.plugin, policy=Main_Available, enabled=true
+https://github.com/fmz200/wool_scripts/raw/main/Loon/plugin/blockAds.plugin, tag=TG广告必须死合集, enabled=true
+https://raw.githubusercontent.com/bai1zi/shadowrocket-surge-loon-qx/main/AD.sgmodule, tag=去广告合集, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/AdBlack.png, enabled=true
+https://raw.githubusercontent.com/Keywos/rule/main/script/netisp/netisp.plugin, tag=入口落地查询, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Find_My.png, enabled=true
+https://gitlab.com/lodepuly/vpn_tool/-/raw/master/Tool/Loon/Plugin/WARP_Node_Query.plugin, tag=WARP节点查询, enabled=false
+https://raw.githubusercontent.com/githubdulong/Script/master/Surge/XiMaLaYa.sgmodule, tag=喜马拉雅部分解锁, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/VIP.png, enabled=false
+http://script.hub/file/_start_/https://raw.githubusercontent.com/WeiGiegie/666/main/ximalaya.js/_end_/ximalaya.plugin?type=qx-rewrite&target=loon-plugin&del=true, tag=喜马拉雅听书Vip, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/VIP.png, enabled=false
+http://script.hub/file/_start_/https://raw.githubusercontent.com/Moli-X/Resources/main/Filter/ADBlack.list/_end_/ADBlack.plugin?type=qx-rewrite&target=loon-plugin&del=true, tag=广告名单封杀, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/AdBlack.png, enabled=false
+http://script.hub/file/_start_/https://raw.githubusercontent.com/NobyDa/Script/master/QuantumultX/AdRule.list/_end_/AdRule.plugin?type=qx-rewrite&target=loon-plugin&del=true, tag=重度广告封杀, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/AdBlack.png, enabled=false
+https://raw.githubusercontent.com/ConnersHua/RuleGo/master/Surge/Module/Block/Advertising.sgmodule, tag=神机去广告, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/AdBlack.png, enabled=false
+http://script.hub/file/_start_/https://github.com/ddgksf2013/Rewrite/raw/master/AdBlock/StartUp.conf/_end_/StartUp.plugin?type=qx-rewrite&target=loon-plugin&del=true, tag=墨鱼去开屏广告, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/AdBlack.png, enabled=false
+http://script.hub/file/_start_/https://raw.githubusercontent.com/WeiGiegie/666/main/b612.js/_end_/b612.plugin?type=qx-rewrite&target=loon-plugin&del=true, tag=b612咔叽vip, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/VIP.png, enabled=true
+https://napi.ltd/script/Worker/KuWo.js, policy=Available线路, tag=酷我音乐Vip, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/VIP.png, enabled=true
+https://gitlab.com/lodepuly/vpn_tool/-/raw/master/Tool/Loon/Plugin/Remove_ads_by_keli.plugin, tag=可莉广告过滤器, enabled=true
+https://gitlab.com/lodepuly/vpn_tool/-/raw/master/Tool/Loon/Plugin/BlockAdvertisers.plugin, tag=广告平台拦截器, enabled=true
+https://gitlab.com/lodepuly/vpn_tool/-/raw/master/Tool/Loon/Plugin/Himalaya_remove_ads.plugin, tag=喜马拉雅去广告, enabled=false
+https://gitlab.com/lodepuly/vpn_tool/-/raw/master/Tool/Loon/Plugin/YouTube_remove_ads.plugin, tag=YouTube去广告, enabled=true
+https://gitlab.com/lodepuly/vpn_tool/-/raw/master/Tool/Loon/Plugin/JD_remove_ads.plugin, tag=京东去广告, enabled=true
+https://gitlab.com/lodepuly/vpn_tool/-/raw/master/Tool/Loon/Plugin/Taobao_remove_ads.plugin, tag=淘宝去广告, enabled=true
+https://gitlab.com/lodepuly/vpn_tool/-/raw/master/Tool/Loon/Plugin/PuPuMall_remove_ads.plugin, tag=朴朴超市去广告, enabled=true
+https://gitlab.com/lodepuly/vpn_tool/-/raw/master/Tool/Loon/Plugin/MailMaster_remove_ads.plugin, tag=网易邮箱大师, enabled=true
+https://gitlab.com/lodepuly/vpn_tool/-/raw/master/Tool/Loon/Plugin/VideoGo_remove_ads.plugin, tag=萤石云视频去广告, enabled=true
+https://gitlab.com/lodepuly/vpn_tool/-/raw/master/Tool/Loon/Plugin/ShuQiCenterReader_remove_ads.plugin, tag=书旗小说去广告, enabled=true
+https://gitlab.com/lodepuly/vpn_tool/-/raw/master/Tool/Loon/Plugin/KuGou_remove_ads.plugin, tag=酷狗音乐去广告, enabled=true
+https://raw.githubusercontent.com/zqzess/rule_for_quantumultX/master/Surge/Module/kuwo.sgmodule, tag=酷我音乐去广告, enabled=true
+https://gitlab.com/lodepuly/vpn_tool/-/raw/master/Tool/Loon/Plugin/FleaMarket_remove_ads.plugin, tag=闲鱼去广告, enabled=true
+https://gitlab.com/lodepuly/vpn_tool/-/raw/master/Tool/Loon/Plugin/PinDuoDuo_remove_ads.plugin, tag=拼多多去广告, enabled=true
+https://gitlab.com/lodepuly/vpn_tool/-/raw/master/Tool/Loon/Plugin/555DY_remove_ads.plugin, tag=555电影去广告, enabled=true
+https://gitlab.com/lodepuly/vpn_tool/-/raw/master/Tool/Loon/Plugin/JD_Price.plugin, tag=京东比价, enabled=true
+https://gitlab.com/lodepuly/vpn_tool/-/raw/master/Tool/Loon/Plugin/YouTubeSubtitlesTranslation.plugin, tag=YouTube翻译, enabled=true
+https://gitlab.com/lodepuly/vpn_tool/-/raw/master/Tool/Loon/Plugin/NodeLinkCheck.Plugin, tag=代理链路检测, enabled=true
+https://gitlab.com/lodepuly/vpn_tool/-/raw/master/Tool/Loon/Plugin/Node_detection_tool.plugin, tag=节点检测工具, enabled=true
+[Mitm]
